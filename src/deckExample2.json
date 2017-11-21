@@ -1,0 +1,14 @@
+{
+    "name": "Exploration cards",
+    "rootPath": "C:\\cards",
+    "cards": [{
+        "filename": "exploration-caledonia-dolmen",
+        "count": 1
+    },{
+        "filename": "exploration-caledonia-will-o-the-wisp",
+        "count": 1
+    },{
+        "filename": "exploration-wolf-pack",
+        "count": 4
+    }]
+}

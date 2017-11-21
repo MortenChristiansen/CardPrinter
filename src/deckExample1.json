@@ -1,0 +1,14 @@
+{
+    "name": "City cards",
+    "rootPath": "C:\\cards",
+    "cards": [{
+        "filename": "city-mercenaries",
+        "count": 5
+    },{
+        "filename": "city-mercenary-captain",
+        "count": 2
+    },{
+        "filename": "city-ranger",
+        "count": 3
+    }]
+}
