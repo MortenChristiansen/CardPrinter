@@ -18,6 +18,9 @@
             var isValid = deck.Validate();
             System.Console.WriteLine($"Valid: {isValid}");
 
+            System.Console.WriteLine("Converting images");
+            ImageConverter.ConvertImages(deck);
+
             System.Console.ReadLine();
         }
     }

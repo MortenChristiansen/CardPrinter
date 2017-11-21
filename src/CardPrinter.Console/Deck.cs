@@ -67,7 +67,7 @@ namespace CardPrinter.Console
             var valid = true;
             foreach (var card in Cards)
             {
-                var cardPath = Path.Combine(RootPath, card.FileName);
+                var cardPath = GetPath(card);
                 if (!File.Exists(cardPath))
                 {
                     System.Console.WriteLine($"The card '{cardPath}' does not exist");
@@ -82,5 +82,8 @@ namespace CardPrinter.Console
 
             return valid;
         }
+
+        public string GetPath(Card card) =>
+            Path.Combine(RootPath, card.FileName);
     }
 }
