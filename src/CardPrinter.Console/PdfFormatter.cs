@@ -1,6 +1,7 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
+using static CardPrinter.Console.Deck;
 
 namespace CardPrinter.Console
 {
@@ -15,7 +16,7 @@ namespace CardPrinter.Console
             if (File.Exists(pdfName))
                 File.Delete(pdfName);
 
-            var margin = (float)deck.Margin * PixelsPerMillimeter;
+            var margin = (float)deck.Dimensions.PageMargin * PixelsPerMillimeter;
             var pdfDoc = new Document(PageSize.A4, margin, margin, margin, margin);
             var writer = PdfWriter.GetInstance(pdfDoc, new FileStream(pdfName, FileMode.OpenOrCreate));
 
@@ -27,21 +28,25 @@ namespace CardPrinter.Console
             {
                 for (int i = 0; i < card.count; i++)
                 {
-                    AddImage(deck.CardWidth, deck.CardHeight, margin, card.imagePath, pdfDoc, ref pageCardIndex);
+                    AddImage(deck.Dimensions, margin, card.imagePath, pdfDoc, content, ref pageCardIndex);
                 }
             }
 
             pdfDoc.Close();
         }
 
-        private static void AddImage(decimal cardWidthInMm, decimal cardHeightInMm, float margin, string imagePath, Document pdfDoc, ref int pageCardIndex)
+        private static void AddImage(CardDimensions dimensions, float margin, string imagePath, Document pdfDoc, PdfContentByte content, ref int pageCardIndex)
         {
             var availableWidth = PageSize.A4.Width - (2 * margin);
             var availableHeight = PageSize.A4.Height - (2 * margin);
-            var cardWidth = (float)cardWidthInMm * PixelsPerMillimeter;
-            var cardHeight = (float)cardHeightInMm * PixelsPerMillimeter;
-            var cardsPerRow = (int)(availableWidth / cardWidth);
-            var cardsPerColumn = (int)(availableHeight / cardHeight);
+            var cardWidth = (float)dimensions.CardWidth * PixelsPerMillimeter;
+            var cardHeight = (float)dimensions.CardHeight * PixelsPerMillimeter;
+            var enableClipping = dimensions.ImageBorderClipping.HasValue;
+            var clip = (float)(dimensions.ImageBorderClipping ?? 0.0m) * PixelsPerMillimeter;
+            var clippedCardWidth = cardWidth - (2 * clip);
+            var clippedCardHeight = cardHeight - (2 * clip);
+            var cardsPerRow = (int)(availableWidth / (enableClipping ? clippedCardWidth : cardWidth));
+            var cardsPerColumn = (int)(availableHeight / (enableClipping ? clippedCardHeight : cardHeight));
 
             if (pageCardIndex >= cardsPerRow * cardsPerColumn)
             {
@@ -57,9 +62,26 @@ namespace CardPrinter.Console
 
             var path = Path.GetFullPath(imagePath);
             var image = Image.GetInstance(path);
-            image.SetAbsolutePosition(positionX, positionY);
             image.ScaleAbsolute(cardWidth, cardHeight);
-            pdfDoc.Add(image);
+
+            if (enableClipping)
+            {
+                var temp = content.CreateTemplate(cardWidth, cardHeight);
+                temp.Rectangle(clip, clip, cardWidth - (2 * clip), cardHeight - (2 * clip));
+                temp.Clip();
+                temp.NewPath();
+                temp.AddImage(image, cardWidth, 0, 0, cardHeight, 0, 0);
+                var clipped = Image.GetInstance(temp);
+                clipped.SetAbsolutePosition(positionX - (x * clip * 2) - clip, positionY + (y * clip * 2) + clip);
+
+                pdfDoc.Add(clipped);
+            }
+            else
+            {
+                image.SetAbsolutePosition(positionX, positionY);
+                pdfDoc.Add(image);
+            }
+
             pageCardIndex++;
         }
     }

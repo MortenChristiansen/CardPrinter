@@ -9,10 +9,16 @@ namespace CardPrinter.Console
     {
         public string Name { get; set; }
         public string RootPath { get; set; }
-        public decimal Margin { get; set; }
-        public decimal CardWidth { get; set; }
-        public decimal CardHeight { get; set; }
+        public CardDimensions Dimensions { get; set; }
         public Card[] Cards { get; set; }
+
+        public class CardDimensions
+        {
+            public decimal PageMargin { get; set; }
+            public decimal CardWidth { get; set; }
+            public decimal CardHeight { get; set; }
+            public decimal? ImageBorderClipping { get; set; }
+        }
 
         public class Card
         {

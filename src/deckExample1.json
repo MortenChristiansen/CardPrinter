@@ -1,8 +1,11 @@
 {
     "name": "City cards",
-    "cardHeight": 95.3,
-    "cardWidth": 69.9,
-    "margin": 0.0,
+    "dimensions": {
+        "cardHeight": 95.3,
+        "cardWidth": 69.9,
+        "pageMargin": 5.0,
+        "imageBorderClipping": 2.0
+    },
     "rootPath": "C:\\cards",
     "cards": [{
         "filename": "city-mercenaries",
