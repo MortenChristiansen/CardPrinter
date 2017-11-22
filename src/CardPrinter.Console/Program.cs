@@ -1,4 +1,7 @@
-﻿namespace CardPrinter.Console
+﻿using System.IO;
+using System.Linq;
+
+namespace CardPrinter.Console
 {
     static class Program
     {
@@ -22,9 +25,17 @@
             var deckInfo = ImageConverter.ConvertImages(deck);
             System.Console.WriteLine("Formatting pdf");
             PdfFormatter.Format(deck, deckInfo);
+            System.Console.WriteLine("Deleting images");
+            CleanUp(deckInfo);
             System.Console.WriteLine("Done");
 
             System.Console.ReadLine();
         }
+
+        private static void CleanUp(DeckInfo deckInfo) =>
+            deckInfo.CardCounts
+                .Where(c => File.Exists(c.imagePath))
+                .ToList()
+                .ForEach(c => File.Delete(c.imagePath));
     }
 }
