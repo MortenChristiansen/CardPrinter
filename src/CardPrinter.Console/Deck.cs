@@ -9,6 +9,7 @@ namespace CardPrinter.Console
     {
         public string Name { get; set; }
         public string RootPath { get; set; }
+        public decimal Margin { get; set; }
         public decimal CardWidth { get; set; }
         public decimal CardHeight { get; set; }
         public Card[] Cards { get; set; }
