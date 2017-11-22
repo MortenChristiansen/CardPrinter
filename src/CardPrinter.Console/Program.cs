@@ -19,7 +19,10 @@
             System.Console.WriteLine($"Valid: {isValid}");
 
             System.Console.WriteLine("Converting images");
-            ImageConverter.ConvertImages(deck);
+            var deckInfo = ImageConverter.ConvertImages(deck);
+            System.Console.WriteLine("Formatting pdf");
+            PdfFormatter.Format(deck, deckInfo);
+            System.Console.WriteLine("Done");
 
             System.Console.ReadLine();
         }

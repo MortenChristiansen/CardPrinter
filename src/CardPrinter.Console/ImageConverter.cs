@@ -5,11 +5,12 @@ namespace CardPrinter.Console
 {
     static class ImageConverter
     {
-        public static void ConvertImages(Deck deck)
+        public static DeckInfo ConvertImages(Deck deck)
         {
             if (!Directory.Exists("output"))
                 Directory.CreateDirectory("output");
 
+            var deckInfo = new DeckInfo();
             foreach (var card in deck.Cards)
             {
                 var cardPath = deck.GetPath(card);
@@ -21,8 +22,10 @@ namespace CardPrinter.Console
                         File.Delete(newFilePath);
 
                     image.Write(newFilePath);
+                    deckInfo.AddCardCount(newFilePath, card.Count);
                 }
             }
+            return deckInfo;
         }
     }
 }
