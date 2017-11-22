@@ -26,7 +26,7 @@ namespace CardPrinter.Console
             var path = Path.GetFullPath(image1.imagePath);
             var image = Image.GetInstance(path);
             image.SetAbsolutePosition(margin, margin);
-            image.ScaleAbsolute(69.9f * PixelsPerMillimeter, 95.3f * PixelsPerMillimeter);
+            image.ScaleAbsolute((float)deck.CardWidth * PixelsPerMillimeter, (float)deck.CardHeight * PixelsPerMillimeter);
             pdfDoc.Add(image);
 
             pdfDoc.Close();
