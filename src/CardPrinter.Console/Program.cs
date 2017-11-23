@@ -7,14 +7,24 @@ namespace CardPrinter.Console
     {
         static void Main(string[] args)
         {
-            if (args.Length != 1)
+            if (args.Length < 1)
             {
                 System.Console.WriteLine("Usage: Supply the filename of a deck definition as argument");
                 System.Console.ReadLine();
                 return;
             }
 
-            var deck = Deck.Parse(args[0]);
+            foreach (var deckFile in args)
+            {
+                CreatePdf(deckFile);
+            }
+
+            System.Console.WriteLine("Done");
+        }
+
+        private static void CreatePdf(string deckFile)
+        {
+            var deck = Deck.Parse(deckFile);
             if (deck != null)
                 System.Console.WriteLine($"Deck '{deck.Name}' successfully parsed");
 
@@ -27,9 +37,6 @@ namespace CardPrinter.Console
             PdfFormatter.Format(deck, deckInfo);
             System.Console.WriteLine("Deleting images");
             CleanUp(deckInfo);
-            System.Console.WriteLine("Done");
-
-            System.Console.ReadLine();
         }
 
         private static void CleanUp(DeckInfo deckInfo) =>
