@@ -6,6 +6,10 @@
         "pageMargin": 5.0,
         "imageBorderClipping": 2.0
     },
+    "cuttingLines": {
+        "distanceX": 1.1,
+        "distanceY": 1.5
+    },
     "rootPath": "C:\\cards",
     "cards": [{
         "filename": "city-mercenaries",

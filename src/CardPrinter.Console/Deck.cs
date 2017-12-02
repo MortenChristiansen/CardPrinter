@@ -10,6 +10,7 @@ namespace CardPrinter.Console
         public string Name { get; set; }
         public string RootPath { get; set; }
         public CardDimensions Dimensions { get; set; }
+        public CuttingLineDimensions CuttingLines { get; set; }
         public Card[] Cards { get; set; }
 
         public class CardDimensions
@@ -18,6 +19,12 @@ namespace CardPrinter.Console
             public decimal CardWidth { get; set; }
             public decimal CardHeight { get; set; }
             public decimal? ImageBorderClipping { get; set; }
+        }
+
+        public class CuttingLineDimensions
+        {
+            public decimal DistanceX { get; set; }
+            public decimal DistanceY{ get; set; }
         }
 
         public class Card

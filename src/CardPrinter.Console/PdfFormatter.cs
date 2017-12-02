@@ -28,14 +28,14 @@ namespace CardPrinter.Console
             {
                 for (int i = 0; i < card.count; i++)
                 {
-                    AddImage(deck.Dimensions, margin, card.imagePath, pdfDoc, content, ref pageCardIndex);
+                    AddImage(deck.Dimensions, deck.CuttingLines, margin, card.imagePath, pdfDoc, content, ref pageCardIndex);
                 }
             }
 
             pdfDoc.Close();
         }
 
-        private static void AddImage(CardDimensions dimensions, float margin, string imagePath, Document pdfDoc, PdfContentByte content, ref int pageCardIndex)
+        private static void AddImage(CardDimensions dimensions, CuttingLineDimensions cuttingLines, float margin, string imagePath, Document pdfDoc, PdfContentByte content, ref int pageCardIndex)
         {
             var availableWidth = PageSize.A4.Width - (2 * margin);
             var availableHeight = PageSize.A4.Height - (2 * margin);
@@ -73,16 +73,68 @@ namespace CardPrinter.Console
                 temp.AddImage(image, cardWidth, 0, 0, cardHeight, 0, 0);
                 var clipped = Image.GetInstance(temp);
                 clipped.SetAbsolutePosition(positionX - (x * clip * 2) - clip, positionY + (y * clip * 2) + clip);
-
                 pdfDoc.Add(clipped);
+
+                if (cuttingLines != null)
+                    AddCuttingLines(content, positionX - (x * clip * 2), positionY + (y * clip * 2) + (2 * clip), cardWidth - (2 * clip), cardHeight - (2 * clip));
             }
             else
             {
                 image.SetAbsolutePosition(positionX, positionY);
                 pdfDoc.Add(image);
+
+                if (cuttingLines != null)
+                    AddCuttingLines(content, positionX, positionY, cardWidth, cardHeight);
             }
 
             pageCardIndex++;
+        }
+
+        private static void AddCuttingLines(PdfContentByte content, float x, float y, float width, float height)
+        {
+            var borderX = 1.1f * PixelsPerMillimeter;
+            var borderY = 1.5f * PixelsPerMillimeter;
+            var length = 10 * PixelsPerMillimeter;
+            var thickness = 0.1f * PixelsPerMillimeter;
+
+            content.SetLineWidth(thickness);
+            content.SetColorStroke(new BaseColor(80, 80, 80));
+
+            // Lower left corner
+            content.MoveTo(x + borderX, y);
+            content.LineTo(x + borderX, y + length);
+            content.Stroke();
+
+            content.MoveTo(x, y + borderY);
+            content.LineTo(x + length, y + borderY);
+            content.Stroke();
+
+            // Lower right corner
+            content.MoveTo(x + width - borderX, y);
+            content.LineTo(x + width - borderX, y + length);
+            content.Stroke();
+
+            content.MoveTo(x + width, y + borderY);
+            content.LineTo(x + width - length, y + borderY);
+            content.Stroke();
+
+            // Top left corner
+            content.MoveTo(x + borderX, y + height);
+            content.LineTo(x + borderX, y + height - length);
+            content.Stroke();
+
+            content.MoveTo(x, y + height - borderY);
+            content.LineTo(x + length, y + height - borderY);
+            content.Stroke();
+
+            // Top right corner
+            content.MoveTo(x + width - borderX, y + height);
+            content.LineTo(x + width - borderX, y + height - length);
+            content.Stroke();
+
+            content.MoveTo(x + width, y + height - borderY);
+            content.LineTo(x + width - length, y + height - borderY);
+            content.Stroke();
         }
     }
 }
