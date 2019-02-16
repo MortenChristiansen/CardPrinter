@@ -76,7 +76,7 @@ namespace CardPrinter.Console
                 pdfDoc.Add(clipped);
 
                 if (cuttingLines != null)
-                    AddCuttingLines(content, positionX - (x * clip * 2), positionY + (y * clip * 2) + (2 * clip), cardWidth - (2 * clip), cardHeight - (2 * clip));
+                    AddCuttingLines(content, positionX - (x * clip * 2), positionY + (y * clip * 2) + (2 * clip), cardWidth - (2 * clip), cardHeight - (2 * clip), cardsPerRow, cardsPerColumn, x, y);
             }
             else
             {
@@ -84,13 +84,13 @@ namespace CardPrinter.Console
                 pdfDoc.Add(image);
 
                 if (cuttingLines != null)
-                    AddCuttingLines(content, positionX, positionY, cardWidth, cardHeight);
+                    AddCuttingLines(content, positionX, positionY, cardWidth, cardHeight, cardsPerRow, cardsPerColumn, x, y);
             }
 
             pageCardIndex++;
         }
 
-        private static void AddCuttingLines(PdfContentByte content, float x, float y, float width, float height)
+        private static void AddCuttingLines(PdfContentByte content, float x, float y, float width, float height, int cardsPerRow, int cardsPerColumn, int xIndex, int yIndex)
         {
             var borderX = 1.1f * PixelsPerMillimeter;
             var borderY = 1.5f * PixelsPerMillimeter;
@@ -98,41 +98,46 @@ namespace CardPrinter.Console
             var thickness = 0.1f * PixelsPerMillimeter;
 
             content.SetLineWidth(thickness);
-            content.SetColorStroke(new BaseColor(80, 80, 80));
+            content.SetColorStroke(new BaseColor(0,0,0));
+
+            var isLeftMost = xIndex  == 0;
+            var isRightMost = xIndex == cardsPerRow - 1;
+            var isTopMost = yIndex == 0;
+            var isBottomMost = yIndex == cardsPerColumn - 1;
 
             // Lower left corner
-            content.MoveTo(x + borderX, y);
+            content.MoveTo(x + borderX, isBottomMost ? 0 : y);
             content.LineTo(x + borderX, y + length);
             content.Stroke();
 
-            content.MoveTo(x, y + borderY);
+            content.MoveTo(isLeftMost ? 0 : x, y + borderY);
             content.LineTo(x + length, y + borderY);
             content.Stroke();
 
             // Lower right corner
-            content.MoveTo(x + width - borderX, y);
+            content.MoveTo(x + width - borderX, isBottomMost ? 0 : y);
             content.LineTo(x + width - borderX, y + length);
             content.Stroke();
 
-            content.MoveTo(x + width, y + borderY);
+            content.MoveTo(isRightMost ? 10000 : x + width, y + borderY);
             content.LineTo(x + width - length, y + borderY);
             content.Stroke();
 
             // Top left corner
-            content.MoveTo(x + borderX, y + height);
+            content.MoveTo(x + borderX, isTopMost ? 10000 : y + height);
             content.LineTo(x + borderX, y + height - length);
             content.Stroke();
 
-            content.MoveTo(x, y + height - borderY);
+            content.MoveTo(isLeftMost ? 0 : x, y + height - borderY);
             content.LineTo(x + length, y + height - borderY);
             content.Stroke();
 
             // Top right corner
-            content.MoveTo(x + width - borderX, y + height);
+            content.MoveTo(x + width - borderX, isTopMost ? 10000 : y + height);
             content.LineTo(x + width - borderX, y + height - length);
             content.Stroke();
 
-            content.MoveTo(x + width, y + height - borderY);
+            content.MoveTo(isRightMost ? 10000 : x + width, y + height - borderY);
             content.LineTo(x + width - length, y + height - borderY);
             content.Stroke();
         }
