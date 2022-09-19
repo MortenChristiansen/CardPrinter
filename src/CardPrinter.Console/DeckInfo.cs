@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
+﻿namespace CardPrinter.Console;
 
-namespace CardPrinter.Console
+class DeckInfo
 {
-    class DeckInfo
-    {
-        public IEnumerable<(string imagePath, int count)> CardCounts => _cardCounts;
+    public IEnumerable<(string imagePath, int count)> CardCounts => _cardCounts;
 
-        private List<(string imagePath, int count)> _cardCounts = new List<(string, int)>();
+    private List<(string imagePath, int count)> _cardCounts = new List<(string, int)>();
 
-        public void AddCardCount(string imagePath, int count) =>
-            _cardCounts.Add((imagePath, count));
-    }
+    public void AddCardCount(string imagePath, int count) =>
+        _cardCounts.Add((imagePath, count));
 }

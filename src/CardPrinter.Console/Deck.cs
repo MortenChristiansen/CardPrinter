@@ -1,105 +1,101 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.IO;
-using System.Linq;
 
-namespace CardPrinter.Console
+namespace CardPrinter.Console;
+
+class Deck
 {
-    class Deck
+    public string Name { get; set; }
+    public string RootPath { get; set; }
+    public CardDimensions Dimensions { get; set; }
+    public CuttingLineDimensions CuttingLines { get; set; }
+    public Card[] Cards { get; set; }
+
+    public class CardDimensions
     {
-        public string Name { get; set; }
-        public string RootPath { get; set; }
-        public CardDimensions Dimensions { get; set; }
-        public CuttingLineDimensions CuttingLines { get; set; }
-        public Card[] Cards { get; set; }
+        public decimal PageMargin { get; set; }
+        public decimal CardWidth { get; set; }
+        public decimal CardHeight { get; set; }
+        public decimal? ImageBorderClipping { get; set; }
+    }
 
-        public class CardDimensions
+    public class CuttingLineDimensions
+    {
+        public decimal DistanceX { get; set; }
+        public decimal DistanceY{ get; set; }
+    }
+
+    public class Card
+    {
+        public string FileName { get; set; }
+        public int Count { get; set; }
+    }
+
+    public static Deck Parse(string deckDefinitionPath)
+    {
+        if (!File.Exists(deckDefinitionPath))
         {
-            public decimal PageMargin { get; set; }
-            public decimal CardWidth { get; set; }
-            public decimal CardHeight { get; set; }
-            public decimal? ImageBorderClipping { get; set; }
-        }
-
-        public class CuttingLineDimensions
-        {
-            public decimal DistanceX { get; set; }
-            public decimal DistanceY{ get; set; }
-        }
-
-        public class Card
-        {
-            public string FileName { get; set; }
-            public int Count { get; set; }
-        }
-
-        public static Deck Parse(string deckDefinitionPath)
-        {
-            if (!File.Exists(deckDefinitionPath))
-            {
-                System.Console.WriteLine("Deck definition does not exist");
-                return null;
-            }
-
-            var deckDefinitionJson = File.ReadAllText(deckDefinitionPath);
-
-            try
-            {
-                var deck = JsonConvert.DeserializeObject<Deck>(deckDefinitionJson);
-                deck.Normalize();
-                return deck;
-            }
-            catch (Exception e)
-            {
-                System.Console.WriteLine("Deck definition invalid: " + e.Message);
-            }
-
+            System.Console.WriteLine("Deck definition does not exist");
             return null;
         }
 
-        private void Normalize()
+        var deckDefinitionJson = File.ReadAllText(deckDefinitionPath);
+
+        try
         {
-            foreach (var card in Cards ?? new Card[0])
-            {
-                if (!card.FileName.EndsWith(".psd", StringComparison.InvariantCultureIgnoreCase))
-                    card.FileName += ".psd";
-            }
+            var deck = JsonConvert.DeserializeObject<Deck>(deckDefinitionJson);
+            deck.Normalize();
+            return deck;
+        }
+        catch (Exception e)
+        {
+            System.Console.WriteLine("Deck definition invalid: " + e.Message);
         }
 
-        public bool Validate()
+        return null;
+    }
+
+    private void Normalize()
+    {
+        foreach (var card in Cards ?? new Card[0])
         {
-            if (!Directory.Exists(RootPath))
-            {
-                System.Console.WriteLine("Deck root directory does not exist");
-                return false;
-            }
+            if (!card.FileName.EndsWith(".psd", StringComparison.InvariantCultureIgnoreCase))
+                card.FileName += ".psd";
+        }
+    }
 
-            if (Cards == null || Cards.Length == 0)
-            {
-                System.Console.WriteLine("The deck does not contain any cards");
-                return false;
-            }
+    public bool Validate()
+    {
+        if (!Directory.Exists(RootPath))
+        {
+            System.Console.WriteLine("Deck root directory does not exist");
+            return false;
+        }
 
-            var valid = true;
-            foreach (var card in Cards)
+        if (Cards == null || Cards.Length == 0)
+        {
+            System.Console.WriteLine("The deck does not contain any cards");
+            return false;
+        }
+
+        var valid = true;
+        foreach (var card in Cards)
+        {
+            var cardPath = GetPath(card);
+            if (!File.Exists(cardPath))
             {
-                var cardPath = GetPath(card);
-                if (!File.Exists(cardPath))
-                {
-                    System.Console.WriteLine($"The card '{cardPath}' does not exist");
-                    valid = false;
-                }
-            }
-            if (Cards.Any(c => c.Count < 1))
-            {
-                System.Console.WriteLine($"The count for cards cannot be less than 1");
+                System.Console.WriteLine($"The card '{cardPath}' does not exist");
                 valid = false;
             }
-
-            return valid;
+        }
+        if (Cards.Any(c => c.Count < 1))
+        {
+            System.Console.WriteLine($"The count for cards cannot be less than 1");
+            valid = false;
         }
 
-        public string GetPath(Card card) =>
-            Path.Combine(RootPath, card.FileName);
+        return valid;
     }
+
+    public string GetPath(Card card) =>
+        Path.Combine(RootPath, card.FileName);
 }
