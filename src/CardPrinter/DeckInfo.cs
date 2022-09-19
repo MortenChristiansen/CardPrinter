@@ -1,4 +1,4 @@
-﻿namespace CardPrinter.Console;
+﻿namespace CardPrinter;
 
 class DeckInfo
 {

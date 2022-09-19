@@ -1,6 +1,6 @@
 ﻿using ImageMagick;
 
-namespace CardPrinter.Console;
+namespace CardPrinter;
 
 static class ImageConverter
 {

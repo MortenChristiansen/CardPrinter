@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CardPrinter.Console;
+namespace CardPrinter;
 
 class Deck
 {
@@ -34,7 +34,7 @@ class Deck
     {
         if (!File.Exists(deckDefinitionPath))
         {
-            System.Console.WriteLine("Deck definition does not exist");
+            Console.WriteLine("Deck definition does not exist");
             return null;
         }
 
@@ -48,7 +48,7 @@ class Deck
         }
         catch (Exception e)
         {
-            System.Console.WriteLine("Deck definition invalid: " + e.Message);
+            Console.WriteLine("Deck definition invalid: " + e.Message);
         }
 
         return null;
@@ -67,13 +67,13 @@ class Deck
     {
         if (!Directory.Exists(RootPath))
         {
-            System.Console.WriteLine("Deck root directory does not exist");
+            Console.WriteLine("Deck root directory does not exist");
             return false;
         }
 
         if (Cards == null || Cards.Length == 0)
         {
-            System.Console.WriteLine("The deck does not contain any cards");
+            Console.WriteLine("The deck does not contain any cards");
             return false;
         }
 
@@ -83,13 +83,13 @@ class Deck
             var cardPath = GetPath(card);
             if (!File.Exists(cardPath))
             {
-                System.Console.WriteLine($"The card '{cardPath}' does not exist");
+                Console.WriteLine($"The card '{cardPath}' does not exist");
                 valid = false;
             }
         }
         if (Cards.Any(c => c.Count < 1))
         {
-            System.Console.WriteLine($"The count for cards cannot be less than 1");
+            Console.WriteLine($"The count for cards cannot be less than 1");
             valid = false;
         }
 

@@ -1,8 +1,8 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using static CardPrinter.Console.Deck;
+using static CardPrinter.Deck;
 
-namespace CardPrinter.Console;
+namespace CardPrinter;
 
 static class PdfFormatter
 {
