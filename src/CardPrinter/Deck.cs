@@ -10,25 +10,9 @@ class Deck
     public CuttingLineDimensions CuttingLines { get; set; }
     public Card[] Cards { get; set; }
 
-    public class CardDimensions
-    {
-        public decimal PageMargin { get; set; }
-        public decimal CardWidth { get; set; }
-        public decimal CardHeight { get; set; }
-        public decimal? ImageBorderClipping { get; set; }
-    }
-
-    public class CuttingLineDimensions
-    {
-        public decimal DistanceX { get; set; }
-        public decimal DistanceY{ get; set; }
-    }
-
-    public class Card
-    {
-        public string FileName { get; set; }
-        public int Count { get; set; }
-    }
+    public record CardDimensions(decimal PageMargin, decimal CardWidth, decimal CardHeight, decimal? ImageBorderClipping);
+    public record CuttingLineDimensions(decimal DistanceX, decimal DistanceY);
+    public record Card(string FileName, int Count);
 
     public static Deck Parse(string deckDefinitionPath)
     {
@@ -54,14 +38,10 @@ class Deck
         return null;
     }
 
-    private void Normalize()
-    {
-        foreach (var card in Cards ?? new Card[0])
-        {
-            if (!card.FileName.EndsWith(".psd", StringComparison.InvariantCultureIgnoreCase))
-                card.FileName += ".psd";
-        }
-    }
+    private void Normalize() =>
+        Cards = (Cards ?? new Card[0])
+            .Select(c => !c.FileName.EndsWith(".psd", StringComparison.InvariantCultureIgnoreCase) ? c with { FileName = c.FileName + ".psd" } : c)
+            .ToArray();
 
     public bool Validate()
     {
